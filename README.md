@@ -34,3 +34,18 @@ flowchart LR
     Caddy --> App
 
     App <--> MariaDB
+```
+## 3. Uruchamianie
+Projekt uruchamiamy za pomocą docker compose. Konieczne jest ustawienie zmiennych środowiskowych. Projekt zakłada, że zmienne środowiskowe znajdą się w pliku ".env".
+Wymagane zmienne środowiskowe to:
+
+- MYSQL_ROOT_PASSWORD — hasło użytkownika root
+- MYSQL_DATABASE — nazwa tworzonej bazy danych
+- MYSQL_USER — użytkownik bazy danych
+- MYSQL_PASSWORD — hasło użytkownika bazy danych
+
+- DB_NAME — nazwa bazy danych (musi być taka sama jak MYSQL_DATABASE)
+- DB_USER — użytkownik bazy danych (taki sam jak MYSQL_USER)
+- DB_PASS — hasło użytkownika (taki sam jak MYSQL_PASSWORD)
+
+- GF_SERVER_ROOT_URL — HOSTNAME dla naszej Grafany
