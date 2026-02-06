@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Projekt – Konteneryzacja i Orkiestracja (Dokumentacja)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f5f7;
+            margin: 20px auto;
+            max-width: 900px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .box {
+            background: #fff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #d0d7de;
+        }
+        code, pre {
+            background: #eef1f5;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #d0d7de;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Dokumentacja projektu – Konteneryzacja i orkiestracja usług IT</h1>
+
+<div class="box">
+    <h2>Wprowadzenie</h2>
+    <p>
+        Poniżej znajduje się dokumentacja mojego projektu oraz zebrane informacje dotyczące
+        programu zajęć, wymagań zaliczenia oraz przykładów i poradników, które wykorzystuję podczas przygotowywania projektu.
+        Materiał opisuje wykorzystywane technologie, strukturę kontenerów oraz proces konteneryzacji aplikacji.
+    </p>
+</div>
+<h2>Zadania</h2>
+
+<form id="addTaskForm" style="margin-bottom:10px">
+  <input type="text" id="taskName" placeholder="Nazwa zadania" required />
+  <button type="submit">➕ Dodaj</button>
+</form>
+
+<ul id="tasksList"></ul>
+
+<script>
+async function loadTasks(){
+  const res = await fetch('/api/tasks');
+  const tasks = await res.json();
+  const ul = document.getElementById('tasksList');
+  ul.innerHTML = '';
+  tasks.forEach(t=>{
+    const li = document.createElement('li');
+    li.textContent = `${t.name} — ${t.status}`;
+    if(t.status !== 'DONE'){
+      const btn = document.createElement('button');
+      btn.textContent = 'Oznacz jako zrobione';
+      btn.style.marginLeft = '8px';
+      btn.onclick = async () => {
+        await fetch(`/api/tasks/${t.id}/done`, { method: 'POST' });
+        await loadTasks();
+      };
+      li.appendChild(btn);
+    }
+    ul.appendChild(li);
+  });
+}
+
+document.getElementById('addTaskForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const name = document.getElementById('taskName').value.trim();
+  if(!name) return;
+  const res = await fetch('/api/tasks', {
+    method:'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({name})
+  });
+  if(res.ok){
+    document.getElementById('taskName').value = '';
+    await loadTasks();
+  }else{
+    const data = await res.json().catch(()=>({error:'Błąd'}));
+    alert(data.error || 'Nie udało się dodać zadania.');
+  }
+});
+
+loadTasks();
+
+</script>
+<div class="box">
+    <h2>Informacje z zajęć</h2>
+    <p>
+       Przedmiot dotyczy pracy z kontenerami i orkiestracją usług. Na zajęciach omawiane były rozwiązania takie jak Proxmox oraz Cockpit (Fedora/Red Hat),
+       które umożliwiają zarządzanie maszynami wirtualnymi i kontenerami.
+       W ramach zajęć korzystamy z chmury prowadzącego, gdzie dostępna jest pełna konteneryzacja i wirtualizacja.
+    </p>
+    <p>Kontakt z prowadzącym odbywa się przez e-mail lub Teams. Dodatkowy kanał komunikacji stanowi Mattermost:  
+    <code>https://mm.zarnecki.org/signup_user_complete/?id=rq4snu4a47fxf8zzrigrwit5do</code></p>
+</div>
+
+<div class="box">
+    <h2>Program kursu</h2>
+
+    <h3>Cele</h3>
+    <ul>
+        <li>Odświeżenie podstaw Linux.</li>
+        <li>Omówienie konteneryzacji (Docker, Podman) i wirtualizacji.</li>
+        <li>Tworzenie obrazów i uruchamianie usług.</li>
+        <li>Wystawianie aplikacji na świat i praca z tunelami.</li>
+        <li>Orkiestracja: Traefik, Ansible, Kubernetes.</li>
+    </ul>
+
+    <h3>Tematy zajęć</h3>
+
+<pre>
+1. Wprowadzenie: konteneryzacja, Proxmox, architektura kontenerów
+2. Linux – szybkie przypomnienie
+3. Docker – podstawy
+4. Dockerfile – własne obrazy aplikacji
+5. Podman – alternatywa dla Docker
+6. Aplikacje wielokontenerowe (docker-compose)
+7. Własne aplikacje + rejestry obrazów
+8. Tunele i dostęp zewnętrzny
+9. Traefik – reverse proxy i SSL
+10. Ansible – automatyzacja
+11. Monitoring – Grafana + Prometheus
+12. Kubernetes – pody i usługi
+13. Skalowanie aplikacji
+14. Orkiestracja w praktyce
+15. Podsumowanie + projekt końcowy
+</pre>
+</div>
+
+<div class="box">
+    <h2>Wymagania zaliczenia</h2>
+
+    <ul>
+        <li>Minimum 4 działające kontenery.</li>
+        <li><strong>Ocena 5.0:</strong> spójna usługa – aplikacja + baza + dodatkowe serwisy.</li>
+        <li>Minimum jedna baza danych (MariaDB / PostgreSQL / MongoDB).</li>
+        <li>Aplikacja korzystająca z bazy danych.</li>
+    </ul>
+</div>
+</body>
+</html>
